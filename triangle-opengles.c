@@ -57,13 +57,16 @@ static const char* vertex_shader_text =
 "#version 100\n"
 "precision mediump float;\n"
 "uniform mat4 MVP;\n"
+"uniform float CellX;\n"
+"uniform float CellY;\n"
+"uniform float Layers;\n"
 "attribute vec3 vCol;\n"
 "attribute vec3 vPos;\n"
 "varying vec3 color;\n"
 "void main()\n"
 "{\n"
 //"    gl_Position = MVP * vec4(vPos, 1.0);\n"
-"    gl_Position = vec4(vPos, 1.0);\n"
+"    gl_Position = vec4(vPos.x/CellX, vPos.y/CellY, vPos.z, 1.0);\n"
 "    color = vCol;\n"
 "}\n";
 
@@ -110,6 +113,31 @@ void parse_int(int* n, char* name)
     {
         fprintf(stderr, "`%s` must be a number greater than zero!\n", name);
         exit(EXIT_FAILURE);
+    }
+}
+
+void checkCompileErrors(unsigned int shader, int type) /* type: 0 = shader; 1 = program */
+{
+    int success;
+    char infoLog[1024];
+    if (type != 1)
+    {
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+            printf("ERROR::SHADER_COMPILATION_ERROR of type: %d\n%s\n", type, infoLog);
+        }
+    }
+    else
+    {
+        glGetProgramiv(shader, GL_LINK_STATUS, &success);
+        if (!success)
+        {
+            glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+            printf("ERROR::PROGRAM_LINKING_ERROR of type: %d\n%s\n", type, infoLog);
+
+        }
     }
 }
 
@@ -235,19 +263,25 @@ int main(int argc, char** argv)
     const GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
     glCompileShader(vertex_shader);
+    checkCompileErrors(vertex_shader, 0);
 
     const GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
     glCompileShader(fragment_shader);
+    checkCompileErrors(fragment_shader, 0);
 
     const GLuint program = glCreateProgram();
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);
     glLinkProgram(program);
+    checkCompileErrors(program, 1);
 
     const GLint mvp_location = glGetUniformLocation(program, "MVP");
     const GLint vpos_location = glGetAttribLocation(program, "vPos");
     const GLint vcol_location = glGetAttribLocation(program, "vCol");
+
+    const GLint cellx_location = glGetUniformLocation(program, "CellX");
+    const GLint celly_location = glGetUniformLocation(program, "CellY");
 
     glEnableVertexAttribArray(vpos_location);
     glEnableVertexAttribArray(vcol_location);
@@ -273,6 +307,8 @@ int main(int argc, char** argv)
 
         glUseProgram(program);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) &mvp);
+        glUniform1f(cellx_location, 2.0f);
+        glUniform1f(celly_location, 3.0f);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         glfwSwapBuffers(window);
