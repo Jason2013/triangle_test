@@ -94,7 +94,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-int main(void)
+int main(int argc, char** argv)
 {
     int width = 1024; // window width in pixels
     int height = 768; // window height in pixels
@@ -123,6 +123,56 @@ int main(void)
         { "help",               0, NULL, HELP },
         { NULL, 0, NULL, 0 }
     };
+
+    while ((ch = getopt_long(argc, argv, "w:g:x:y:z:h", options, NULL)) != -1)
+    {
+        switch (ch)
+        {
+        case 'w':
+        case WINDOW_WIDTH:
+            if (strcmp(optarg, "-") != 0)
+            {
+                width = atoi(optarg);
+            }
+            break;
+        case 'g':
+        case WINDOW_HEIGHT:
+            if (strcmp(optarg, "-") != 0)
+            {
+                height = atoi(optarg);
+            }
+            break;
+        case 'x':
+        case CELLS_IN_X:
+            if (strcmp(optarg, "-") != 0)
+            {
+                x = atoi(optarg);
+            }
+            break;
+        case 'y':
+        case CELLS_IN_Y:
+            if (strcmp(optarg, "-") != 0)
+            {
+                y = atoi(optarg);
+            }
+            break;
+        case 'z':
+        case LAYERS:
+            if (strcmp(optarg, "-") != 0)
+            {
+                z = atoi(optarg);
+            }
+            break;
+        case 'h':
+        case HELP:
+            usage();
+            exit(EXIT_SUCCESS);
+            break;
+        default:
+            usage();
+            exit(EXIT_FAILURE);
+        }
+    }
 
     glfwSetErrorCallback(error_callback);
 
