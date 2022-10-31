@@ -71,6 +71,18 @@ static const char* fragment_shader_text =
 "    gl_FragColor = vec4(color, 1.0);\n"
 "}\n";
 
+static void usage(void)
+{
+    printf("Usage: triangle-test [OPTION]...\n");
+    printf("Options:\n");
+    printf("  -w, --width=WIDTH        the window width in pixels, default: 1024\n");
+    printf("  -h, --width=WIDTH        the window height in pixels, default: 768\n");
+    printf("  -x, --cell-in-x=X        the number of grid cells in horizontal, default: 16\n");
+    printf("  -y, --cell-in-y=Y        the number of grid cells in vertical, default: 12\n");
+    printf("  -z, --layers=Z           the number of layers, default: 4\n");
+    printf("  -h, --help               show this help\n");
+}
+
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error: %s\n", description);
