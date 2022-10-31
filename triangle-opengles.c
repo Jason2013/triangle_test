@@ -104,8 +104,8 @@ void parse_int(int* n, char* name)
     else
     {
         fprintf(stderr, "`%s` must be a number greater than zero!\n", name);
+        exit(EXIT_FAILURE);
     }
-    exit(EXIT_FAILURE);
 }
 
 int main(int argc, char** argv)
