@@ -38,35 +38,45 @@
 
 typedef struct Vertex
 {
-    vec2 pos;
+    vec3 pos;
     vec3 col;
 } Vertex;
 
 static const Vertex vertices[6] =
 {
-    { { -1.0f, -1.0f }, { 1.f, 0.f, 0.f } },
-    { {  1.0f, -1.0f }, { 0.f, 1.f, 0.f } },
-    { { -1.0f,  1.0f }, { 0.f, 0.f, 1.f } },
+    { { -1.0f, -1.0f, 0.0f }, { 1.f, 0.f, 0.f } },
+    { {  1.0f, -1.0f, 0.0f }, { 0.f, 1.f, 0.f } },
+    { { -1.0f,  1.0f, 0.0f }, { 0.f, 0.f, 1.f } },
 
-    { { -1.0f,  1.0f }, { 0.f, 0.f, 1.f } },
-    { {  1.0f, -1.0f }, { 0.f, 1.f, 0.f } },
-    { {  1.0f,  1.0f }, { 1.f, 1.f, 0.f } },
+    { { -1.0f,  1.0f, 0.0f }, { 0.f, 0.f, 1.f } },
+    { {  1.0f, -1.0f, 0.0f }, { 0.f, 1.f, 0.f } },
+    { {  1.0f,  1.0f, 0.0f }, { 1.f, 1.f, 0.f } },
 };
 
 static const char* vertex_shader_text =
 "#version 140\n"
 "precision mediump float;\n"
 "uniform mat4 MVP;\n"
-"uniform float CellX;\n"
-"uniform float CellY;\n"
-"uniform float Layers;\n"
+"uniform int CellX;\n"
+"uniform int CellY;\n"
+"uniform int Layers;\n"
 "attribute vec3 vCol;\n"
 "attribute vec3 vPos;\n"
 "varying vec3 color;\n"
 "void main()\n"
 "{\n"
+"    int layer_size = CellX * CellY;\n"
+"    int layer_idx = gl_InstanceID / layer_size;\n"
+"    int layer_remain = gl_InstanceID % layer_size;\n"
+"    int y_idx = layer_remain / CellX;\n"
+"    int x_idx = layer_remain % CellX;\n"
+"    float step_x = 2.0 / float(CellX);\n"
+"    float step_y = 2.0 / float(CellY);\n"
+"    float step_z = 1.0 / float(Layers);\n"
 //"    gl_Position = MVP * vec4(vPos, 1.0);\n"
-"    gl_Position = vec4(vPos.x/CellX, vPos.y/CellY, vPos.z, 1.0);\n"
+//"    gl_Position = vec4(step_x * float(x_idx) - 1.0 + 2.0 * vPos.x/float(CellX), step_y * float(y_idx) - 1.0 + 2.0 * vPos.y/float(CellY), vPos.z/float(Layers), 1.0);\n"
+"    gl_Position = vec4(step_x * float(x_idx) - 1.0 + (vPos.x + 1.0) * step_x * 0.5, step_y * float(y_idx) - 1.0 + (vPos.y + 1.0) * step_y * 0.5, 1.0 - step_z * layer_idx, 1.0);\n"
+
 "    color = vCol;\n"
 "}\n";
 
@@ -282,6 +292,7 @@ int main(int argc, char** argv)
 
     const GLint cellx_location = glGetUniformLocation(program, "CellX");
     const GLint celly_location = glGetUniformLocation(program, "CellY");
+    const GLint layer_location = glGetUniformLocation(program, "Layers");
 
     glEnableVertexAttribArray(vpos_location);
     glEnableVertexAttribArray(vcol_location);
@@ -307,8 +318,9 @@ int main(int argc, char** argv)
 
         glUseProgram(program);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) &mvp);
-        glUniform1f(cellx_location, (float)x);
-        glUniform1f(celly_location, (float)y);
+        glUniform1i(cellx_location, x);
+        glUniform1i(celly_location, y);
+        glUniform1i(layer_location, z);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 6, x*y);
 
         glfwSwapBuffers(window);
