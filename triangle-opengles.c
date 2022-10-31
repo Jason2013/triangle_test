@@ -34,6 +34,8 @@
 #include <stddef.h>
 #include <stdio.h>
 
+#include "getopt.h"
+
 typedef struct Vertex
 {
     vec2 pos;
