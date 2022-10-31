@@ -307,9 +307,9 @@ int main(int argc, char** argv)
 
         glUseProgram(program);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) &mvp);
-        glUniform1f(cellx_location, 2.0f);
-        glUniform1f(celly_location, 3.0f);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glUniform1f(cellx_location, (float)x);
+        glUniform1f(celly_location, (float)y);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, x*y);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
