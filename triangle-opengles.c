@@ -54,7 +54,7 @@ static const Vertex vertices[6] =
 };
 
 static const char* vertex_shader_text =
-"#version 140\n"
+"#version 330\n"
 "precision mediump float;\n"
 //"uniform mat4 MVP;\n"
 "uniform int CellX;\n"
@@ -81,7 +81,7 @@ static const char* vertex_shader_text =
 "}\n";
 
 static const char* fragment_shader_text =
-"#version 140\n"
+"#version 330\n"
 "precision mediump float;\n"
 "varying vec3 color;\n"
 "void main()\n"
@@ -244,7 +244,7 @@ int main(int argc, char** argv)
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
 
     GLFWwindow* window = glfwCreateWindow(width, height, "OpenGL 3.1 Triangle (EGL)", NULL, NULL);
@@ -301,6 +301,9 @@ int main(int argc, char** argv)
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(Vertex), (void*) offsetof(Vertex, col));
 
+    GLuint qry;// [2] ;
+    glGenQueries(1, &qry);
+
     while (!glfwWindowShouldClose(window))
     {
         glViewport(0, 0, width, height);
@@ -317,11 +320,52 @@ int main(int argc, char** argv)
         glUniform1i(cellx_location, x);
         glUniform1i(celly_location, y);
         glUniform1i(layer_location, z);
+
+        //glBeginQuery(GL_PRIMITIVES_GENERATED, qry[0]);
+        glBeginQuery(GL_TIME_ELAPSED, qry);// [1] );
+        
         glDrawArraysInstanced(GL_TRIANGLES, 0, 6, x*y);
+
+        glEndQuery(GL_TIME_ELAPSED);
+        //glEndQuery(GL_PRIMITIVES_GENERATED);
+        
+        glFinish();
+
+        int isAvailable = GL_FALSE;
+        glGetQueryObjectiv(qry,
+            GL_QUERY_RESULT_AVAILABLE,
+            &isAvailable);
+        if (!isAvailable)
+        {
+            fprintf(stderr, "GL_QUERY_RESULT_AVAILABLE!\n");
+            break;
+        }
+
+        GLuint64 ns = 0;
+        glGetQueryObjectui64v(qry, GL_QUERY_RESULT, &ns);
+
+        GLfloat ms = (float)ns / 1000000.0f;
+
+        printf("ms = %f\n", ms);
+
+        //glGetQueryObjectiv(qry[0],
+        //    GL_QUERY_RESULT_AVAILABLE,
+        //    &isAvailable);
+        //if (!isAvailable)
+        //{
+        //    fprintf(stderr, "GL_QUERY_RESULT_AVAILABLE!\n");
+        //    break;
+        //}
+
+        //GLuint ps = 0;
+        //glGetQueryObjectuiv(qry[0], GL_QUERY_RESULT, &ps);
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    glDeleteQueries(1, &qry);
 
     glfwDestroyWindow(window);
 
