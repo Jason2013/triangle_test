@@ -54,7 +54,7 @@ static const Vertex vertices[6] =
 };
 
 static const char* vertex_shader_text =
-"#version 100\n"
+"#version 140\n"
 "precision mediump float;\n"
 "uniform mat4 MVP;\n"
 "uniform float CellX;\n"
@@ -71,7 +71,7 @@ static const char* vertex_shader_text =
 "}\n";
 
 static const char* fragment_shader_text =
-"#version 100\n"
+"#version 140\n"
 "precision mediump float;\n"
 "varying vec3 color;\n"
 "void main()\n"
