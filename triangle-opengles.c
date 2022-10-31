@@ -82,6 +82,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 int main(void)
 {
+    int width = 1024; // window width in pixels
+    int height = 768; // window height in pixels
+    int nw = 16;      // number of grid cells in horizontal
+    int nh = 12;      // number of grid cells in vertical
+    int nd = 4;       // number of layers
+
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
