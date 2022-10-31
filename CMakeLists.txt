@@ -4,13 +4,10 @@ project(triangle-test)
 include(FetchContent)
 FetchContent_Declare(glfw
     GIT_REPOSITORY https://github.com/glfw/glfw.git
-    GIT_TAG 3.3.8
+    GIT_TAG dd8a678a66f1967372e5a5e3deac41ebf65ee127
 )
 
-#FetchContent_Declare(glew
-#    GIT_REPOSITORY https://github.com/nigels-com/glew.git
-#    GIT_TAG glew-2.2.0
-#)
+FetchContent_GetProperties(glfw SOURCE_DIR GLFW_SOURCE_DIR)
 
 # Set glfw options
 set(GLFW_BUILD_DOCS OFF)
@@ -19,5 +16,8 @@ set(GLFW_BUILD_TESTS OFF)
 
 FetchContent_MakeAvailable(glfw)
 
-add_executable(main triangle-opengles.c)
-target_link_libraries(main glfw)
+add_library(deps INTERFACE)
+target_include_directories(deps INTERFACE ${GLFW_SOURCE_DIR}/deps)
+
+add_executable(triangle-test triangle-opengles.c)
+target_link_libraries(triangle-test glfw deps)
