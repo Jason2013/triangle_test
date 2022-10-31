@@ -94,6 +94,20 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
+void parse_int(int* n, char* name)
+{
+    int t = atoi(optarg);
+    if (t > 0)
+    {
+        *n = t;
+    }
+    else
+    {
+        fprintf(stderr, "`%s` must be a number greater than zero!\n", name);
+    }
+    exit(EXIT_FAILURE);
+}
+
 int main(int argc, char** argv)
 {
     int width = 1024; // window width in pixels
@@ -132,35 +146,35 @@ int main(int argc, char** argv)
         case WINDOW_WIDTH:
             if (strcmp(optarg, "-") != 0)
             {
-                width = atoi(optarg);
+                parse_int(&width, "width");
             }
             break;
         case 'g':
         case WINDOW_HEIGHT:
             if (strcmp(optarg, "-") != 0)
             {
-                height = atoi(optarg);
+                parse_int(&height, "height");
             }
             break;
         case 'x':
         case CELLS_IN_X:
             if (strcmp(optarg, "-") != 0)
             {
-                x = atoi(optarg);
+                parse_int(&x, "cells-in-x");
             }
             break;
         case 'y':
         case CELLS_IN_Y:
             if (strcmp(optarg, "-") != 0)
             {
-                y = atoi(optarg);
+                parse_int(&y, "cells-in-y");
             }
             break;
         case 'z':
         case LAYERS:
             if (strcmp(optarg, "-") != 0)
             {
-                z = atoi(optarg);
+                parse_int(&z, "layers");
             }
             break;
         case 'h':
@@ -173,6 +187,12 @@ int main(int argc, char** argv)
             exit(EXIT_FAILURE);
         }
     }
+
+    printf("window width: %d\n", width);
+    printf("window height: %d\n", height);
+    printf("cells in x: %d\n", x);
+    printf("cells in y: %d\n", y);
+    printf("layers: %d\n", z);
 
     glfwSetErrorCallback(error_callback);
 
