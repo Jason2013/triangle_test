@@ -56,7 +56,7 @@ static const Vertex vertices[6] =
 static const char* vertex_shader_text =
 "#version 140\n"
 "precision mediump float;\n"
-"uniform mat4 MVP;\n"
+//"uniform mat4 MVP;\n"
 "uniform int CellX;\n"
 "uniform int CellY;\n"
 "uniform int Layers;\n"
@@ -286,7 +286,7 @@ int main(int argc, char** argv)
     glLinkProgram(program);
     checkCompileErrors(program, 1);
 
-    const GLint mvp_location = glGetUniformLocation(program, "MVP");
+    //const GLint mvp_location = glGetUniformLocation(program, "MVP");
     const GLint vpos_location = glGetAttribLocation(program, "vPos");
     const GLint vcol_location = glGetAttribLocation(program, "vCol");
 
@@ -303,10 +303,6 @@ int main(int argc, char** argv)
 
     while (!glfwWindowShouldClose(window))
     {
-        //int width, height;
-        //glfwGetFramebufferSize(window, &width, &height);
-        //const float ratio = width / (float) height;
-
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -317,7 +313,7 @@ int main(int argc, char** argv)
         //mat4x4_mul(mvp, p, m);
 
         glUseProgram(program);
-        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) &mvp);
+        //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) &mvp);
         glUniform1i(cellx_location, x);
         glUniform1i(celly_location, y);
         glUniform1i(layer_location, z);
