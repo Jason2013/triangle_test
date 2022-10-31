@@ -102,6 +102,28 @@ int main(void)
     int y = 12;       // number of grid cells in vertical
     int z = 4;        // number of layers
 
+    int ch;
+
+    enum {
+        WINDOW_WIDTH,
+        WINDOW_HEIGHT,
+        CELLS_IN_X,
+        CELLS_IN_Y,
+        LAYERS,
+        HELP
+    };
+
+    const struct option options[] =
+    {
+        { "width",              1, NULL, WINDOW_WIDTH },
+        { "height",             1, NULL, WINDOW_HEIGHT },
+        { "cells-in-x",         1, NULL, CELLS_IN_X },
+        { "cells-in-y",         1, NULL, CELLS_IN_Y },
+        { "layers",             1, NULL, LAYERS },
+        { "help",               0, NULL, HELP },
+        { NULL, 0, NULL, 0 }
+    };
+
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
