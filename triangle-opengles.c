@@ -76,7 +76,7 @@ static void usage(void)
     printf("Usage: triangle-test [OPTION]...\n");
     printf("Options:\n");
     printf("  -w, --width=WIDTH        the window width in pixels, default: 1024\n");
-    printf("  -h, --height=HEIGHT      the window height in pixels, default: 768\n");
+    printf("  -g, --height=HEIGHT      the window height in pixels, default: 768\n");
     printf("  -x, --cell-in-x=X        the number of grid cells in horizontal, default: 16\n");
     printf("  -y, --cell-in-y=Y        the number of grid cells in vertical, default: 12\n");
     printf("  -z, --layers=Z           the number of layers, default: 4\n");
