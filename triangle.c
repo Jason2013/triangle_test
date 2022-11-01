@@ -436,7 +436,7 @@ int main(int argc, char** argv)
     printf("frames: %d\n", frames);
     printf("total time () = %fs\n", total_ns / 1000000000.0);
     printf("average frame time () = %fs\n", total_ns / 1000000000.0 / frames);
-    printf("triangles per second (TPS): %f", triangles / (total_ns / 1000000000.0 / frames));
+    printf("triangles per second (TPS): %f\n", triangles / (total_ns / 1000000000.0 / frames));
 
     glDeleteQueries(1, &qry);
 
