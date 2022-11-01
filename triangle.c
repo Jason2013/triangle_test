@@ -95,6 +95,9 @@ static void usage(void)
     printf("  -x, --cell-in-x=X        the number of grid cells in horizontal, default: 16\n");
     printf("  -y, --cell-in-y=Y        the number of grid cells in vertical, default: 12\n");
     printf("  -z, --layers=Z           the number of layers, default: 4\n");
+    printf("      --enable-depth-test  enable depth test\n");
+    printf("      --enable-cull-face   enable cull face\n");
+    printf("      --polygon-mode=MODE  polygon mode must be: 'point', 'line' or 'fill', default: 'fill'\n");
     printf("  -h, --help               show this help\n");
 }
 
