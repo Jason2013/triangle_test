@@ -251,15 +251,15 @@ int main(int argc, char** argv)
             break;
         break;
         case POLYGON_MODE:
-            if (strcmp(optarg, "point"))
+            if (strcmp(optarg, "point") == 0)
             {
                 polygon_mode = GL_POINT;
             }
-            else if (strcmp(optarg, "line"))
+            else if (strcmp(optarg, "line") == 0)
             {
                 polygon_mode = GL_LINE;
             }
-            else if (strcmp(optarg, "fill"))
+            else if (strcmp(optarg, "fill") == 0)
             {
                 polygon_mode = GL_FILL;
             }
