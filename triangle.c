@@ -354,10 +354,23 @@ int main(int argc, char** argv)
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(Vertex), (void*) offsetof(Vertex, col));
 
-    //glDisable(GL_DEPTH_TEST);
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    if (enable_depth_test)
+    {
+        glEnable(GL_DEPTH_TEST);
+    }
+    else
+    {
+        glDisable(GL_DEPTH_TEST);
+    }
+    if (enable_cull_face)
+    {
+        glEnable(GL_CULL_FACE);
+    }
+    else
+    {
+        glDisable(GL_CULL_FACE);
+    }
+    glPolygonMode(GL_FRONT_AND_BACK, polygon_mode);
 
     GLuint qry;
     glGenQueries(1, &qry);
