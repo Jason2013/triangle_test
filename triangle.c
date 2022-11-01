@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include "getopt.h"
 
@@ -147,6 +148,23 @@ void checkCompileErrors(unsigned int shader, int type) /* type: 0 = shader; 1 = 
     }
 }
 
+const char* polygon_mode_name(GLenum polygon_mode)
+{
+    assert(polygon_mode == GL_POINT || polygon_mode == GL_LINE || polygon_mode == GL_FILL);
+    if (polygon_mode == GL_POINT)
+    {
+        return "GL_POINT";
+    }
+    else if (polygon_mode == GL_LINE)
+    {
+        return "GL_LINE";
+    }
+    else
+    {
+        return "GL_FILL";
+    }
+}
+
 int main(int argc, char** argv)
 {
     int width = 1024; // window width in pixels
@@ -154,6 +172,9 @@ int main(int argc, char** argv)
     int x = 16;       // number of grid cells in horizontal
     int y = 12;       // number of grid cells in vertical
     int z = 4;        // number of layers
+    int enable_depth_test = 0;
+    int enable_cull_face = 0;
+    GLenum polygon_mode = GL_FILL; // point, line, fill
 
     int ch;
 
@@ -163,6 +184,9 @@ int main(int argc, char** argv)
         CELLS_IN_X,
         CELLS_IN_Y,
         LAYERS,
+        ENABLE_DEPTH_TEST,
+        ENABLE_CULL_FACE,
+        POLYGON_MODE,
         HELP
     };
 
@@ -173,6 +197,9 @@ int main(int argc, char** argv)
         { "cells-in-x",         1, NULL, CELLS_IN_X },
         { "cells-in-y",         1, NULL, CELLS_IN_Y },
         { "layers",             1, NULL, LAYERS },
+        { "enable-depth-test",  0, NULL, ENABLE_DEPTH_TEST },
+        { "enable-cull-face",   0, NULL, ENABLE_CULL_FACE },
+        { "polygon-mode",       1, NULL, POLYGON_MODE },
         { "help",               0, NULL, HELP },
         { NULL, 0, NULL, 0 }
     };
@@ -216,6 +243,32 @@ int main(int argc, char** argv)
                 parse_int(&z, "layers");
             }
             break;
+        case ENABLE_DEPTH_TEST:
+            enable_depth_test = 1;
+            break;
+        case ENABLE_CULL_FACE:
+            enable_cull_face = 1;
+            break;
+        break;
+        case POLYGON_MODE:
+            if (strcmp(optarg, "point"))
+            {
+                polygon_mode = GL_POINT;
+            }
+            else if (strcmp(optarg, "line"))
+            {
+                polygon_mode = GL_LINE;
+            }
+            else if (strcmp(optarg, "fill"))
+            {
+                polygon_mode = GL_FILL;
+            }
+            else
+            {
+                fprintf(stderr, "'--polygon-mode' must be 'point', 'line' or 'fill'!\n");
+                exit(EXIT_FAILURE);
+            }
+            break;
         case 'h':
         case HELP:
             usage();
@@ -232,6 +285,10 @@ int main(int argc, char** argv)
     printf("cells in x: %d\n", x);
     printf("cells in y: %d\n", y);
     printf("layers: %d\n", z);
+    printf("enable depth test: %s\n", enable_depth_test ? "yes" : "no");
+    printf("enable cull face: %s\n", enable_cull_face ? "yes" : "no");
+    printf("polygon mode: %s\n", polygon_mode_name(polygon_mode));
+
 
     glfwSetErrorCallback(error_callback);
 
