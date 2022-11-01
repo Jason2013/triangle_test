@@ -280,6 +280,7 @@ int main(int argc, char** argv)
         }
     }
 
+    printf("======== parameters ========\n");
     printf("window width: %d\n", width);
     printf("window height: %d\n", height);
     printf("cells in x: %d\n", x);
@@ -424,6 +425,7 @@ int main(int argc, char** argv)
         ++fc;
     }
 
+    printf("======== results ========\n");
     printf("grid: %d x %d\n", x, y);
     printf("layers: %d\n", z);
     int triangles = 2 * x * y * z;
