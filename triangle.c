@@ -426,6 +426,12 @@ int main(int argc, char** argv)
         glfwPollEvents();
 
         ++fc;
+
+        {
+            static char title[128];
+            sprintf(title, "OpenGL 3.3 Triangle - Frame %d", fc);
+            glfwSetWindowTitle(window, title);
+        }
     }
 
     printf("======== results ========\n");
