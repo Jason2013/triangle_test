@@ -92,13 +92,13 @@ static void usage(void)
     printf("Options:\n");
     printf("  -w, --width=WIDTH        the window width in pixels, default: 1024\n");
     printf("  -g, --height=HEIGHT      the window height in pixels, default: 768\n");
-    printf("  -x, --cell-in-x=X        the number of grid cells in horizontal, default: 16\n");
-    printf("  -y, --cell-in-y=Y        the number of grid cells in vertical, default: 12\n");
+    printf("  -x, --cells-in-x=X       the number of grid cells in horizontal, default: 16\n");
+    printf("  -y, --cells-in-y=Y       the number of grid cells in vertical, default: 12\n");
     printf("  -z, --layers=Z           the number of layers, default: 4\n");
     printf("      --enable-depth-test  enable depth test\n");
     printf("      --enable-cull-face   enable cull face\n");
     printf("      --polygon-mode=MODE  polygon mode must be: 'point', 'line' or 'fill', default: 'fill'\n");
-    printf("  -f, --frames=FRAMES     number of rendering frames, default: 100\n");
+    printf("  -f, --frames=FRAMES      number of rendering frames, default: 100\n");
     printf("  -h, --help               show this help\n");
 }
 
