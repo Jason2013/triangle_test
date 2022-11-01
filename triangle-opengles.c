@@ -294,6 +294,11 @@ int main(int argc, char** argv)
     const GLint celly_location = glGetUniformLocation(program, "CellY");
     const GLint layer_location = glGetUniformLocation(program, "Layers");
 
+
+    GLuint vertex_array;
+    glGenVertexArrays(1, &vertex_array);
+    glBindVertexArray(vertex_array);
+
     glEnableVertexAttribArray(vpos_location);
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vpos_location, 3, GL_FLOAT, GL_FALSE,
