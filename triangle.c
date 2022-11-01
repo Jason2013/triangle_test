@@ -438,10 +438,10 @@ int main(int argc, char** argv)
     printf("grid: %d x %d\n", x, y);
     printf("layers: %d\n", z);
     int triangles = 2 * x * y * z;
-    printf("triangles per frames: %d\n", triangles);
+    printf("triangles per frame: %d\n", triangles);
     printf("frames: %d\n", frames);
-    printf("total time () = %fs\n", total_ns / 1000000000.0);
-    printf("average frame time () = %fs\n", total_ns / 1000000000.0 / frames);
+    printf("total time: %fs\n", total_ns / 1000000000.0);
+    printf("average frame time: %fs\n", total_ns / 1000000000.0 / frames);
     printf("triangles per second (TPS): %f\n", triangles / (total_ns / 1000000000.0 / frames));
 
     glDeleteQueries(1, &qry);
