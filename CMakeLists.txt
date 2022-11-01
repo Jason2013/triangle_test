@@ -22,5 +22,5 @@ target_include_directories(deps INTERFACE ${GLFW_SOURCE_DIR}/deps)
 add_library(getopt STATIC ${GLFW_SOURCE_DIR}/deps/getopt.c)
 target_link_libraries(getopt deps)
 
-add_executable(triangle-test triangle-opengles.c)
+add_executable(triangle-test triangle.c)
 target_link_libraries(triangle-test glfw getopt)
