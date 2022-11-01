@@ -382,10 +382,17 @@ int main(int argc, char** argv)
     int frames = 100;
     int fc = 0;
 
+    GLbitfield clear_mask = GL_COLOR_BUFFER_BIT;
+    if (enable_depth_test)
+    {
+        clear_mask |= GL_DEPTH_BUFFER_BIT;
+    }
+
     while (!glfwWindowShouldClose(window) && (fc < frames))
     {
         glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
+
+        glClear(clear_mask);
 
         glUseProgram(program);
         glUniform1i(cellx_location, x);
