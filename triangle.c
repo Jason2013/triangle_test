@@ -56,7 +56,6 @@ static const Vertex vertices[6] =
 static const char* vertex_shader_text =
 "#version 330\n"
 "precision mediump float;\n"
-//"uniform mat4 MVP;\n"
 "uniform int CellX;\n"
 "uniform int CellY;\n"
 "uniform int Layers;\n"
@@ -73,10 +72,7 @@ static const char* vertex_shader_text =
 "    float step_x = 2.0 / float(CellX);\n"
 "    float step_y = 2.0 / float(CellY);\n"
 "    float step_z = 1.0 / float(Layers);\n"
-//"    gl_Position = MVP * vec4(vPos, 1.0);\n"
-//"    gl_Position = vec4(step_x * float(x_idx) - 1.0 + 2.0 * vPos.x/float(CellX), step_y * float(y_idx) - 1.0 + 2.0 * vPos.y/float(CellY), vPos.z/float(Layers), 1.0);\n"
 "    gl_Position = vec4(step_x * float(x_idx) - 1.0 + (vPos.x + 1.0) * step_x * 0.5, step_y * float(y_idx) - 1.0 + (vPos.y + 1.0) * step_y * 0.5, 1.0 - step_z * layer_idx, 1.0);\n"
-
 "    color = vCol;\n"
 "}\n";
 
@@ -245,18 +241,14 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(width, height, "OpenGL 3.1 Triangle (EGL)", NULL, NULL);
+    glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
+    GLFWwindow* window = glfwCreateWindow(width, height, "OpenGL 3.3 Triangle", NULL, NULL);
     if (!window)
     {
-        glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
-        window = glfwCreateWindow(width, height, "OpenGL 3.1 Triangle", NULL, NULL);
-        if (!window)
-        {
-            glfwTerminate();
-            exit(EXIT_FAILURE);
-        }
+        glfwTerminate();
+        exit(EXIT_FAILURE);
     }
 
     glfwSetKeyCallback(window, key_callback);
@@ -286,7 +278,6 @@ int main(int argc, char** argv)
     glLinkProgram(program);
     checkCompileErrors(program, 1);
 
-    //const GLint mvp_location = glGetUniformLocation(program, "MVP");
     const GLint vpos_location = glGetAttribLocation(program, "vPos");
     const GLint vcol_location = glGetAttribLocation(program, "vCol");
 
@@ -306,33 +297,34 @@ int main(int argc, char** argv)
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(Vertex), (void*) offsetof(Vertex, col));
 
-    GLuint qry;// [2] ;
+    //glDisable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    GLuint qry;
     glGenQueries(1, &qry);
 
-    while (!glfwWindowShouldClose(window))
+    GLuint64 ns = 0;
+    GLuint64 total_ns = 0;
+    GLfloat ms = 0; // 1 ns = 10^(-6) ms
+
+    int frames = 100;
+    int fc = 0;
+
+    while (!glfwWindowShouldClose(window) && (fc < frames))
     {
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        mat4x4 m, p, mvp;
-        //mat4x4_identity(m);
-        //mat4x4_rotate_Z(m, m, (float) glfwGetTime());
-        //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        //mat4x4_mul(mvp, p, m);
-
         glUseProgram(program);
-        //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) &mvp);
         glUniform1i(cellx_location, x);
         glUniform1i(celly_location, y);
         glUniform1i(layer_location, z);
 
-        //glBeginQuery(GL_PRIMITIVES_GENERATED, qry[0]);
-        glBeginQuery(GL_TIME_ELAPSED, qry);// [1] );
-        
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, x*y);
-
+        glBeginQuery(GL_TIME_ELAPSED, qry);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, x*y*z);
         glEndQuery(GL_TIME_ELAPSED);
-        //glEndQuery(GL_PRIMITIVES_GENERATED);
         
         glFinish();
 
@@ -346,29 +338,23 @@ int main(int argc, char** argv)
             break;
         }
 
-        GLuint64 ns = 0;
         glGetQueryObjectui64v(qry, GL_QUERY_RESULT, &ns);
-
-        GLfloat ms = (float)ns / 1000000.0f;
-
-        printf("ms = %f\n", ms);
-
-        //glGetQueryObjectiv(qry[0],
-        //    GL_QUERY_RESULT_AVAILABLE,
-        //    &isAvailable);
-        //if (!isAvailable)
-        //{
-        //    fprintf(stderr, "GL_QUERY_RESULT_AVAILABLE!\n");
-        //    break;
-        //}
-
-        //GLuint ps = 0;
-        //glGetQueryObjectuiv(qry[0], GL_QUERY_RESULT, &ps);
-
+        total_ns += ns;
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        ++fc;
     }
+
+    printf("grid: %d x %d\n", x, y);
+    printf("layers: %d\n", z);
+    int triangles = 2 * x * y * z;
+    printf("triangles per frames: %d\n", triangles);
+    printf("frames: %d\n", frames);
+    printf("total time () = %fs\n", total_ns / 1000000000.0);
+    printf("average frame time () = %fs\n", total_ns / 1000000000.0 / frames);
+    printf("triangles per second (TPS): %f", triangles / (total_ns / 1000000000.0 / frames));
 
     glDeleteQueries(1, &qry);
 
