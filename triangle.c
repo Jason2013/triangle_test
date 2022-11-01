@@ -98,6 +98,7 @@ static void usage(void)
     printf("      --enable-depth-test  enable depth test\n");
     printf("      --enable-cull-face   enable cull face\n");
     printf("      --polygon-mode=MODE  polygon mode must be: 'point', 'line' or 'fill', default: 'fill'\n");
+    printf("  -f, --frames=FRAMES     number of rendering frames, default: 100\n");
     printf("  -h, --help               show this help\n");
 }
 
@@ -178,6 +179,7 @@ int main(int argc, char** argv)
     int enable_depth_test = 0;
     int enable_cull_face = 0;
     GLenum polygon_mode = GL_FILL; // point, line, fill
+    int frames = 100;
 
     int ch;
 
@@ -190,6 +192,7 @@ int main(int argc, char** argv)
         ENABLE_DEPTH_TEST,
         ENABLE_CULL_FACE,
         POLYGON_MODE,
+        FRAMES,
         HELP
     };
 
@@ -203,11 +206,12 @@ int main(int argc, char** argv)
         { "enable-depth-test",  0, NULL, ENABLE_DEPTH_TEST },
         { "enable-cull-face",   0, NULL, ENABLE_CULL_FACE },
         { "polygon-mode",       1, NULL, POLYGON_MODE },
+        { "frames",             1, NULL, FRAMES },
         { "help",               0, NULL, HELP },
         { NULL, 0, NULL, 0 }
     };
 
-    while ((ch = getopt_long(argc, argv, "w:g:x:y:z:h", options, NULL)) != -1)
+    while ((ch = getopt_long(argc, argv, "w:g:x:y:z:f:h", options, NULL)) != -1)
     {
         switch (ch)
         {
@@ -272,6 +276,13 @@ int main(int argc, char** argv)
                 exit(EXIT_FAILURE);
             }
             break;
+        case 'f':
+        case FRAMES:
+            if (strcmp(optarg, "-") != 0)
+            {
+                parse_int(&frames, "frames");
+            }
+            break;
         case 'h':
         case HELP:
             usage();
@@ -289,6 +300,7 @@ int main(int argc, char** argv)
     printf("cells in x: %d\n", x);
     printf("cells in y: %d\n", y);
     printf("layers: %d\n", z);
+    printf("frames: %d\n", frames);
     printf("enable depth test: %s\n", enable_depth_test ? "yes" : "no");
     printf("enable cull face: %s\n", enable_cull_face ? "yes" : "no");
     printf("polygon mode: %s\n", polygon_mode_name(polygon_mode));
@@ -383,7 +395,6 @@ int main(int argc, char** argv)
     GLuint64 total_ns = 0;
     GLfloat ms = 0; // 1 ns = 10^(-6) ms
 
-    int frames = 100;
     int fc = 0;
 
     GLbitfield clear_mask = GL_COLOR_BUFFER_BIT;
