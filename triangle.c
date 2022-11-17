@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <assert.h>
 
 #include "getopt.h"
@@ -431,6 +432,7 @@ int main(int argc, char** argv)
             if (!isAvailable)
             {
                 fprintf(stderr, "frame %d, wait %d: Query result is not available! wait 0.001 second and try again ...\n", fc, i);
+		sleep(0.001);
             }
         }
 
