@@ -180,6 +180,7 @@ int main(int argc, char** argv)
     int enable_cull_face = 0;
     GLenum polygon_mode = GL_FILL; // point, line, fill
     int frames = 100;
+    int failed = 0;
 
     int ch;
 
@@ -421,12 +422,21 @@ int main(int argc, char** argv)
         glFinish();
 
         int isAvailable = GL_FALSE;
-        glGetQueryObjectiv(qry,
-            GL_QUERY_RESULT_AVAILABLE,
-            &isAvailable);
+
+        for (int i=0; i<1000; ++i)
+        {
+            glGetQueryObjectiv(qry,
+                GL_QUERY_RESULT_AVAILABLE,
+                &isAvailable);
+            if (!isAvailable)
+            {
+                fprintf(stderr, "frame %d, wait %d: Query result is not available! wait 0.001 second and try again ...\n", fc, i);
+            }
+        }
+
         if (!isAvailable)
         {
-            fprintf(stderr, "GL_QUERY_RESULT_AVAILABLE!\n");
+            failed = 1;
             break;
         }
 
@@ -450,10 +460,18 @@ int main(int argc, char** argv)
     printf("layers: %d\n", z);
     int triangles = 2 * x * y * z;
     printf("triangles per frame: %d\n", triangles);
-    printf("frames: %d\n", frames);
-    printf("total time: %fs\n", total_ns / 1000000000.0);
-    printf("average frame time: %fs\n", total_ns / 1000000000.0 / frames);
-    printf("triangles per second (TPS): %f\n", triangles / (total_ns / 1000000000.0 / frames));
+
+    if (!failed)
+    {
+        printf("frames: %d\n", frames);
+        printf("total time: %fs\n", total_ns / 1000000000.0);
+        printf("average frame time: %fs\n", total_ns / 1000000000.0 / frames);
+        printf("triangles per second (TPS): %f\n", triangles / (total_ns / 1000000000.0 / frames));
+    }
+    else
+    {
+        printf("Query result is not available!\nTest failed!\n");
+    }
 
     glDeleteQueries(1, &qry);
 
