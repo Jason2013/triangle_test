@@ -23,6 +23,13 @@
 //
 //========================================================================
 
+#ifdef _WIN32
+#include <Windows.h>
+#define sleep Sleep
+#else // __linux__
+#include <unistd.h>
+#endif
+
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/gl.h>
 #define GLFW_INCLUDE_NONE
@@ -33,7 +40,6 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <assert.h>
 
 #include "getopt.h"
