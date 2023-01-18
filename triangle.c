@@ -245,7 +245,7 @@ int main(int argc, char** argv)
         { NULL, 0, NULL, 0 }
     };
 
-    while ((ch = getopt_long(argc, argv, "w:g:x:y:z:f:h", options, NULL)) != -1)
+    while ((ch = getopt_long(argc, argv, "w:g:x:y:z:l:r:b:t:f:h", options, NULL)) != -1)
     {
         switch (ch)
         {
@@ -484,10 +484,10 @@ int main(int argc, char** argv)
         glUniform1i(celly_location, y);
         glUniform1i(layer_location, z);
 
-        glUniform1f(left_location, -1.0f);
-        glUniform1f(right_location, 1.0f);
-        glUniform1f(bottom_location, -1.0f);
-        glUniform1f(top_location, 1.0f);
+        glUniform1f(left_location, left);
+        glUniform1f(right_location, right);
+        glUniform1f(bottom_location, bottom);
+        glUniform1f(top_location, top);
 
         glBeginQuery(GL_TIME_ELAPSED, qry);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 6, x*y*z);
