@@ -106,6 +106,10 @@ static void usage(void)
     printf("  -x, --cells-in-x=X       the number of grid cells in horizontal, default: 16\n");
     printf("  -y, --cells-in-y=Y       the number of grid cells in vertical, default: 12\n");
     printf("  -z, --layers=Z           the number of layers, default: 4\n");
+    printf("  -l, --left=LEFT          the left position of the grid, default: -1.0\n");
+    printf("  -r, --right=RIGHT        the right position of the grid, default: 1.0\n");
+    printf("  -b, --bottom=BOTTOM      the bottom position of the grid, default: -1.0\n");
+    printf("  -t, --top=TOP            the top position of the grid, default: 1.0\n");
     printf("      --enable-depth-test  enable depth test\n");
     printf("      --enable-cull-face   enable cull face\n");
     printf("      --polygon-mode=MODE  polygon mode must be: 'point', 'line' or 'fill', default: 'fill'\n");
@@ -136,6 +140,12 @@ void parse_int(int* n, char* name)
         fprintf(stderr, "`%s` must be a number greater than zero!\n", name);
         exit(EXIT_FAILURE);
     }
+}
+
+void parse_float(float* n, char* name)
+{
+    float t = (float)atof(optarg);
+    *n = t;
 }
 
 void checkCompileErrors(unsigned int shader, int type) /* type: 0 = shader; 1 = program */
@@ -187,6 +197,10 @@ int main(int argc, char** argv)
     int x = 16;       // number of grid cells in horizontal
     int y = 12;       // number of grid cells in vertical
     int z = 4;        // number of layers
+    float left = -1.0f;   // the left position of the grid
+    float right = 1.0f;   // the right position of the grid
+    float bottom = -1.0f; // the bottom position of the grid
+    float top = 1.0f;     // the top position of the grid
     int enable_depth_test = 0;
     int enable_cull_face = 0;
     GLenum polygon_mode = GL_FILL; // point, line, fill
@@ -201,6 +215,10 @@ int main(int argc, char** argv)
         CELLS_IN_X,
         CELLS_IN_Y,
         LAYERS,
+        LEFT,
+        RIGHT,
+        BOTTOM,
+        TOP,
         ENABLE_DEPTH_TEST,
         ENABLE_CULL_FACE,
         POLYGON_MODE,
@@ -215,6 +233,10 @@ int main(int argc, char** argv)
         { "cells-in-x",         1, NULL, CELLS_IN_X },
         { "cells-in-y",         1, NULL, CELLS_IN_Y },
         { "layers",             1, NULL, LAYERS },
+        { "left",               1, NULL, LEFT },
+        { "right",              1, NULL, RIGHT },
+        { "bottom",             1, NULL, BOTTOM },
+        { "top",                1, NULL, TOP },
         { "enable-depth-test",  0, NULL, ENABLE_DEPTH_TEST },
         { "enable-cull-face",   0, NULL, ENABLE_CULL_FACE },
         { "polygon-mode",       1, NULL, POLYGON_MODE },
@@ -260,6 +282,34 @@ int main(int argc, char** argv)
             if (strcmp(optarg, "-") != 0)
             {
                 parse_int(&z, "layers");
+            }
+            break;
+        case 'l':
+        case LEFT:
+            if (strcmp(optarg, "-") != 0)
+            {
+                parse_float(&left, "left");
+            }
+            break;
+        case 'r':
+        case RIGHT:
+            if (strcmp(optarg, "-") != 0)
+            {
+                parse_float(&right, "right");
+            }
+            break;
+        case 'b':
+        case BOTTOM:
+            if (strcmp(optarg, "-") != 0)
+            {
+                parse_float(&bottom, "bottom");
+            }
+            break;
+        case 't':
+        case TOP:
+            if (strcmp(optarg, "-") != 0)
+            {
+                parse_float(&top, "top");
             }
             break;
         case ENABLE_DEPTH_TEST:
@@ -312,6 +362,10 @@ int main(int argc, char** argv)
     printf("cells in x: %d\n", x);
     printf("cells in y: %d\n", y);
     printf("layers: %d\n", z);
+    printf("left: %f\n", left);
+    printf("right: %f\n", right);
+    printf("bottom: %f\n", bottom);
+    printf("top: %f\n", top);
     printf("frames: %d\n", frames);
     printf("enable depth test: %s\n", enable_depth_test ? "yes" : "no");
     printf("enable cull face: %s\n", enable_cull_face ? "yes" : "no");
