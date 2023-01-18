@@ -67,6 +67,10 @@ static const char* vertex_shader_text =
 "uniform int CellX;\n"
 "uniform int CellY;\n"
 "uniform int Layers;\n"
+"uniform float Left;\n"
+"uniform float Right;\n"
+"uniform float Bottom;\n"
+"uniform float Top;\n"
 "attribute vec3 vCol;\n"
 "attribute vec3 vPos;\n"
 "varying vec3 color;\n"
@@ -77,10 +81,10 @@ static const char* vertex_shader_text =
 "    int layer_remain = gl_InstanceID % layer_size;\n"
 "    int y_idx = layer_remain / CellX;\n"
 "    int x_idx = layer_remain % CellX;\n"
-"    float step_x = 2.0 / float(CellX);\n"
-"    float step_y = 2.0 / float(CellY);\n"
+"    float step_x = (Right - Left) / float(CellX);\n"
+"    float step_y = (Top - Bottom) / float(CellY);\n"
 "    float step_z = 1.0 / float(Layers);\n"
-"    gl_Position = vec4(step_x * float(x_idx) - 1.0 + (vPos.x + 1.0) * step_x * 0.5, step_y * float(y_idx) - 1.0 + (vPos.y + 1.0) * step_y * 0.5, 1.0 - step_z * layer_idx, 1.0);\n"
+"    gl_Position = vec4(step_x * float(x_idx) + Left + (vPos.x + 1.0) * step_x * 0.5, step_y * float(y_idx) + Bottom + (vPos.y + 1.0) * step_y * 0.5, 1.0 - step_z * layer_idx, 1.0);\n"
 "    color = vCol;\n"
 "}\n";
 
@@ -366,6 +370,10 @@ int main(int argc, char** argv)
     const GLint celly_location = glGetUniformLocation(program, "CellY");
     const GLint layer_location = glGetUniformLocation(program, "Layers");
 
+    const GLint left_location = glGetUniformLocation(program, "Left");
+    const GLint right_location = glGetUniformLocation(program, "Right");
+    const GLint bottom_location = glGetUniformLocation(program, "Bottom");
+    const GLint top_location = glGetUniformLocation(program, "Top");
 
     GLuint vertex_array;
     glGenVertexArrays(1, &vertex_array);
@@ -421,6 +429,11 @@ int main(int argc, char** argv)
         glUniform1i(cellx_location, x);
         glUniform1i(celly_location, y);
         glUniform1i(layer_location, z);
+
+        glUniform1f(left_location, -1.0f);
+        glUniform1f(right_location, 1.0f);
+        glUniform1f(bottom_location, -1.0f);
+        glUniform1f(top_location, 1.0f);
 
         glBeginQuery(GL_TIME_ELAPSED, qry);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 6, x*y*z);
