@@ -61,3 +61,9 @@ jobs:
     - name: Build
       working-directory: ${{ github.workspace }}
       run: cmake --build build --config ${{ matrix.config }}
+
+    - name: Save Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: triangle_test_artifact
+        path: build/**
