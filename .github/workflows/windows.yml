@@ -39,7 +39,7 @@ jobs:
         key: ${{ matrix.os }}-${{ matrix.config }}-external-${{ hashFiles('CMakeLists.txt') }}
         path: |
           !**
-          build/external/glfw/**
+          build/_deps/**
 
     - name: Cache CMake
       uses: actions/cache@v3
@@ -65,5 +65,5 @@ jobs:
     - name: Save Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: triangle_test_artifact
-        path: build/**
+        name: triangle_test-${{ matrix.os }}-${{ matrix.config }}
+        path: build/${{ matrix.config }}/triangle-test*
