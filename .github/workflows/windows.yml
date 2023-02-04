@@ -1,0 +1,67 @@
+name: Windows
+
+on:
+  push:
+    paths-ignore:
+      - 'README.md'
+    branches-ignore:
+      - 'tmp*'
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+    branches-ignore:
+      - 'tmp*'
+
+jobs:
+  windows-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, windows-2019]
+        config: [Debug, Release]
+        include:
+            - os: windows-2022
+              generator: "Visual Studio 17 2022"
+            - os: windows-2019
+              generator: "Visual Studio 16 2019"
+
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Cache CMake
+      uses: actions/cache@v3
+      id: cache-cmake
+      with:
+        key: ${{ matrix.os }}-${{ matrix.config }}-cmake-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
+        path: build/CMakeCache.txt
+
+    - name: Cache External Code
+      uses: actions/cache@v3
+      id: cache-external
+      with:
+        key: ${{ matrix.os }}-${{ matrix.config }}-external-${{ hashFiles('CMakeLists.txt') }}
+        path: |
+          !**
+          build/_deps/**
+
+    - name: Show CMake generators
+      working-directory: ${{ github.workspace }}
+      run: |
+        cmake --version
+        cmake --help
+
+    - name: Configure CMake
+      working-directory: ${{ github.workspace }}
+      run: cmake -G "${{ matrix.generator }}" -A x64 -S . -B build
+
+    - name: Build
+      working-directory: ${{ github.workspace }}
+      run: cmake --build build --config ${{ matrix.config }}
+
+    - name: Save Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: triangle_test-${{ matrix.os }}-${{ matrix.config }}-${{ github.sha }}
+        path: build/${{ matrix.config }}/triangle-test*
