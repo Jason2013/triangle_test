@@ -29,8 +29,6 @@ jobs:
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
-      with:
-        submodules: true
 
     - name: Cache External Code
       uses: actions/cache@v3
@@ -65,5 +63,5 @@ jobs:
     - name: Save Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: triangle_test-${{ matrix.os }}-${{ matrix.config }}
+        name: triangle_test-${{ matrix.os }}-${{ matrix.config }}-${{ github.sha }}
         path: build/${{ matrix.config }}/triangle-test*
